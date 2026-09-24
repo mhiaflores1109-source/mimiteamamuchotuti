@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>MiMi & TuTi ❤️💻🏎️</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Dancing+Script:wght@700&family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #0a0e17;
+      --gold-accent: #f4a261;
+      --yellow-glow: #ffd166;
+      --blue-glow: #00b4d8;
+      --red-wax: #b7094c;
+      --paper-cream: #fffdf7;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      color: #e2e8f0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .font-handwriting {
+      font-family: 'Caveat', cursive;
+    }
+    .font-romantic {
+      font-family: 'Dancing Script', cursive;
+    }
+    .font-tech {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    /* Custom Canvas & Layering */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00b4d8;
+    }
+
+    /* Envelope Styling */
+    .envelope-wrapper {
+      perspective: 1200px;
+    }
+    .envelope {
+      position: relative;
+      background: linear-gradient(145deg, #7209b7, #3a0ca3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(114, 9, 183, 0.4);
+      transform-style: preserve-3d;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(180deg, #560bad, #3a0ca3);
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+      transform-origin: top;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 20;
+    }
+    .envelope.open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 5;
+    }
+
+    /* Wax Seal Button */
+    .wax-seal {
+      background: radial-gradient(circle at 30% 30%, #ff4d6d, #b7094c 70%, #590d22);
+      box-shadow: 0 8px 20px rgba(183, 9, 76, 0.6), inset 0 2px 5px rgba(255, 255, 255, 0.4), inset 0 -3px 5px rgba(0,0,0,0.5);
+      border: 2px dashed rgba(255, 215, 0, 0.6);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .wax-seal:hover {
+      transform: translate(-50%, -50%) scale(1.15) rotate(5deg);
+      box-shadow: 0 12px 28px rgba(255, 209, 102, 0.8), inset 0 2px 8px rgba(255, 255, 255, 0.6);
+    }
+    .wax-seal:active {
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    /* Letter Scroll & Animation */
+    .letter-paper {
+      background: #fefae0;
+      background-image: radial-gradient(#e9d8a6 0.75px, transparent 0.75px);
+      background-size: 16px 16px;
+      color: #1d3557;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      transform-origin: bottom center;
+      transition: all 0.8s ease-in-out;
+    }
+
+    /* Giant Interactive Flowers Container */
+    .flower-container {
+      position: fixed;
+      bottom: -20px;
+      left: 0;
+      width: 100%;
+      height: 85vh;
+      pointer-events: none;
+      z-index: 10;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+    }
+    .flower-svg-wrapper {
+      pointer-events: auto;
+      cursor: pointer;
+      transform-origin: bottom center;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+    }
+    .flower-svg-wrapper:hover {
+      transform: scale(1.08) translateY(-10px);
+      filter: drop-shadow(0 15px 25px rgba(0, 180, 216, 0.6));
+    }
+
+    /* Hot Wheels Track & Car Animation */
+    .road-track {
+      background: linear-gradient(90deg, #1e293b 0%, #0f172a 50%, #1e293b 100%);
+      border-top: 3px dashed #ffd166;
+      border-bottom: 3px solid #334155;
+    }
+    .hotwheel-car {
+      position: absolute;
+      left: -200px;
+      transition: transform 0.2s;
+    }
+    .hotwheel-car.racing-1 {
+      animation: driveCar 4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    }
+    .hotwheel-car.racing-2 {
+      animation: driveCar 4.5s cubic-bezier(0.2, 0.1, 0.1, 1) 0.4s forwards;
+    }
+
+    @keyframes driveCar {
+      0% { left: -200px; transform: scaleX(1); }
+      45% { transform: scaleX(1) translateY(-4px); }
+      50% { transform: scaleX(1) translateY(2px); }
+      100% { left: 115vw; transform: scaleX(1); }
+    }
+
+    /* Flame Exhaust Particle Animation */
+    .exhaust-fire {
+      position: absolute;
+      left: -25px;
+      bottom: 12px;
+      width: 30px;
+      height: 14px;
+      background: linear-gradient(270deg, #ff4d6d, #ffb703, transparent);
+      border-radius: 50% 0 0 50%;
+      animation: flamePulse 0.08s infinite alternate;
+    }
+    @keyframes flamePulse {
+      0% { transform: scale(0.8) skewY(-2deg); opacity: 0.8; }
+      100% { transform: scale(1.2) skewY(2deg); opacity: 1; }
+    }
+
+    /* Polaroid Flip Cards */
+    .polaroid-card {
+      perspective: 1000px;
+    }
+    .polaroid-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+    }
+    .polaroid-card.flipped .polaroid-inner {
+      transform: rotateY(180deg);
+    }
+    .polaroid-front, .polaroid-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 12px;
+    }
+    .polaroid-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Custom Glow Pulse */
+    .glow-yellow {
+      box-shadow: 0 0 25px rgba(255, 209, 102, 0.5);
+    }
+    .glow-blue {
+      box-shadow: 0 0 25px rgba(0, 180, 216, 0.5);
+    }
+  </style>
+</head>
+<body class="min-h-screen relative flex flex-col justify-between overflow-x-hidden">
+
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Top Header / Software x Automotive Tagline -->
+  <header class="relative z-20 w-full pt-6 px-4 text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/80 border border-slate-700/60 backdrop-blur-md shadow-lg text-xs md:text-sm font-tech text-cyan-400 mb-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      <span>SYSTEM STATUS: IN LOVE WITH AUTOMOTIVE GUY 💻❤️🏎️</span>
+    </div>
+    <h1 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-sky-300 to-rose-400 font-tech tracking-wide drop-shadow-md">
+      NO DUDES DE MI INMENSO AMOR POR TI
+    </h1>
+    <p class="text-slate-400 text-sm md:text-base font-handwriting text-2xl mt-1">
+      Construido con mucho amor para el dueño de mi corazón.
+    </p>
+  </header>
+
+  <!-- MAIN INTERACTIVE CONTAINER -->
+  <main class="relative z-20 container mx-auto px-4 py-8 flex flex-col items-center justify-center min-h-[75vh] gap-12">
+
+    <!-- SECTION 1: VINTAGE ENVELOPE & LETTER -->
+    <section id="envelopeSection" class="w-full max-w-xl flex flex-col items-center">
+      <div class="envelope-wrapper w-full flex justify-center">
+        
+        <!-- Interactive Envelope -->
+        <div id="envelope" class="envelope w-[320px] sm:w-[420px] h-[220px] sm:h-[260px] rounded-2xl relative flex items-center justify-center p-4 border border-amber-500/30">
+          
+          <!-- Flap -->
+          <div class="envelope-flap"></div>
+          
+          <!-- Wax Seal Button (Clickable) -->
+          <button id="waxSealBtn" class="wax-seal absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 sm:w-20 sm:h-20 rounded-full z-30 flex flex-col items-center justify-center text-amber-200 cursor-pointer">
+            <i class="fa-solid font-bold text-xl sm:text-2xl fa-heart drop-shadow-md animate-pulse"></i>
+            <span class="text-[9px] font-tech uppercase tracking-wider text-amber-100 font-bold mt-0.5">ABRIR</span>
+          </button>
+
+          <!-- Envelope Pocket Accent -->
+          <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-slate-950/80 to-transparent rounded-b-2xl pointer-events-none z-10"></div>
+          
+          <div class="absolute bottom-3 text-center w-full z-15 pointer-events-none text-slate-300 font-handwriting text-xl">
+            Has clic en el corazoncito mi amor ✨
+          </div>
+
+          <!-- The Hidden Letter Paper inside -->
+          <div id="letterPaper" class="letter-paper absolute left-4 right-4 bottom-4 top-4 rounded-xl p-6 md:p-8 flex flex-col justify-between opacity-0 pointer-events-none z-20 overflow-y-auto max-h-[520px]">
+            <div>
+              <div class="flex justify-between items-center border-b-2 border-amber-900/20 pb-3 mb-4">
+                <span class="font-tech text-xs text-rose-700 tracking-wider font-bold">FROM: DE_TU_CHICA_SOFTWARE</span>
+                <span class="font-handwriting text-xl text-amber-900 font-bold">TO: Mi Chico Automotriz 🏎️❤️</span>
+              </div>
+              
+              <h2 class="font-romantic text-3xl sm:text-4xl text-amber-950 font-bold mb-3 text-center">
+                ¡Hola mi niño hermoso!
+              </h2>
+
+              <p class="font-handwriting text-2xl sm:text-3xl text-slate-800 leading-relaxed space-y-3">
+                Eres todo eso que no podria explicar con palabras, alguien que admiro y amo tan inmensamente que no veo un futuro lindo si no estas a mi lado. 
+                Sé cuánto amas los autos, los motores y la velocidad de un carro... y yo amo ser esa chica que admira con todo el corazón cada una de tus pasiones.
+                <br/><br/>
+                Te cree esto en mi mundo digital porque quería regalarte algo eterno, tan único e infinito como todo lo que siento por ti. 
+                Eres mi acelerador cuando necesito motivación, y mi refugio seguro cuando todo va rápido. 
+                Espero te guste, quisiera que veas lo mucho que te amo y me encanta incluir y pedacito de ti en mi vida y en mi mundo de codigos que pueden ser lo mas estresante del mundo pero tu estas ahi aunque sea con mi color amarillo o mi color rojo o morado. TU ERES TODO LO QUE ME MOTIVA A SEGUIR ADELANTE. Quiero ser parte de tu vida como yo te hago parte de mi vida en todos los sentidos, con simplemente escuchar un carro fuerte pienso en ti y en como estarias hipnotizado o como te encanta oservar detalladamente, ME ENCANTAS, aparte de ser un niño precioso eres el mejor novio del mundo TE AMO HASTA EL FIN DE LOS TIEMPOS, HASTA EL INFINITO Y MAS ALLA.
+              </p>
+            </div>
+
+            <!-- Interactive Triggers inside the Letter -->
+            <div class="mt-6 pt-4 border-t border-amber-900/20 flex flex-col gap-3 sm:flex-row justify-center items-center">
+              <button id="bloomBtn" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-sky-500 text-slate-950 font-bold font-tech text-xs uppercase tracking-wider shadow-lg hover:shadow-cyan-500/50 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                Tuti tiene que hacer clic aquí 🌻❤️
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: REASONS WHY I LOVE YOU (POLAROID GALLERY) -->
+<section id="reasonsSection" class="w-full max-w-5xl opacity-0 transition-opacity duration-1000 hidden">
+  <div class="text-center mb-8">
+    <h2 class="font-tech text-2xl md:text-4xl text-cyan-300 tracking-wider">
+      <i class="fa-solid fa-microchip text-amber-400 mr-2"></i>
+      RAZONES POR LAS QUE TE AMO
+    </h2>
+    <p class="font-handwriting text-2xl text-slate-300 mt-1">
+      Haz clic en cada tarjeta para voltearla y ver un pedacito de mi corazon en letritas escritas con amor ❤️
+    </p>
+  </div>
+
+  <!-- Grid of Flip Cards (Se aumentó la altura a 480px y se ajustó el contenido) -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-2">
+    
+    <!-- Card 1 -->
+    <div class="polaroid-card h-[480px] cursor-pointer" onclick="flipCard(this)">
+      <div class="polaroid-inner">
+        <!-- FRONT -->
+        <div class="polaroid-front bg-slate-900 border-2 border-slate-700 p-4 flex flex-col justify-between shadow-2xl rounded-xl">
+          <div class="relative w-full h-[320px] bg-slate-800 rounded-lg overflow-hidden flex items-center justify-center border border-slate-700 group">
+            <img id="img1" src="sonrrisa.jpeg" alt="Autos y Amor" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 text-xs font-tech text-amber-300 bg-slate-950/80 px-2 py-1 rounded">
+              #1 ERES MI AVENTURA
+            </span>
+          </div>
+          <div class="text-center font-handwriting text-2xl text-amber-200 my-auto">
+            Tócame para leer ❤️
+          </div>
+        </div>
+        
+        <!-- BACK -->
+        <div class="polaroid-back bg-gradient-to-br from-amber-100 to-amber-200 text-slate-900 p-5 flex flex-col justify-between border-2 border-amber-400 shadow-2xl rounded-xl overflow-hidden">
+          <div class="flex items-center gap-3 border-b border-amber-300 pb-2 mb-2">
+            <i class="fa-solid fa-car-side text-2xl text-amber-700"></i>
+            <h3 class="font-romantic text-2xl font-bold text-amber-900">Eres mi aventura</h3>
+          </div>
+          
+          <!-- Contenedor con Scroll Suave para el texto -->
+          <div class="overflow-y-auto pr-2 my-1 max-h-[330px] custom-scroll">
+            <p class="font-handwriting text-lg leading-relaxed text-slate-800">
+              "Así como un motor necesita la chispa perfecta para arrancar a máxima velocidad, mi corazón solo acelera cuando estoy contigo, eres esa persona a la cual me encanta conocer y experimentar cosas nuevas, eres alguien que me da el valor suficiente para enfrentarme a mis miedo y soltar uuna locura sin pena, te amo tanto que una escapadita contigo es tan PERFECTA simplemente porque solo somos tu y yo, claro se me olvida, verte sonrreir es lo mas lindo que mi corazon no puede resistir porque cada que sonrries me llenas de mucha felicidad porque me das a entender que estas feliz conmigo y eso es algo muy bonito que siento en mi corazon. Gracias."
+            </p>
+          </div>
+          
+          <div class="text-right text-xs font-tech text-amber-800/60 pt-2 border-t border-amber-300/50">
+            // ESTADO: ENAMORADISIMA_AL_100%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="polaroid-card h-[480px] cursor-pointer" onclick="flipCard(this)">
+      <div class="polaroid-inner">
+        <!-- FRONT -->
+        <div class="polaroid-front bg-slate-900 border-2 border-slate-700 p-4 flex flex-col justify-between shadow-2xl rounded-xl">
+          <div class="relative w-full h-[320px] bg-slate-800 rounded-lg overflow-hidden flex items-center justify-center border border-slate-700 group">
+            <img id="img2" src="loquito.jpeg" alt="Deportivos" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 text-xs font-tech text-sky-300 bg-slate-950/80 px-2 py-1 rounded">
+              #2 ME COMPLEMENTAS
+            </span>
+          </div>
+          <div class="text-center font-handwriting text-2xl text-sky-200 my-auto">
+            Tócame para leer ❤️
+          </div>
+        </div>
+        
+        <!-- BACK -->
+        <div class="polaroid-back bg-gradient-to-br from-sky-100 to-cyan-200 text-slate-900 p-5 flex flex-col justify-between border-2 border-sky-400 shadow-2xl rounded-xl overflow-hidden">
+          <div class="flex items-center gap-3 border-b border-sky-300 pb-2 mb-2">
+            <i class="fa-solid fa-code text-2xl text-sky-700"></i>
+            <h3 class="font-romantic text-2xl font-bold text-sky-900">Locuras solo contigo</h3>
+          </div>
+          
+          <div class="overflow-y-auto pr-2 my-1 max-h-[330px] custom-scroll">
+            <p class="font-handwriting text-lg leading-relaxed text-slate-800">
+              "Tu ternura, tus abrazos y tu forma de cuidarme no tienen ningún error. Me haces sentir libre y demasiado especial a tu lado, te amo porque eres mi otra mitad, esa mitad que necesito a mi lado porque amo ser yo misma contigo y solo quisiera que tu me conozcas de verdad, que tu sepas mis defectos mis sueños mis metas, quiero que mi vida este compartida solo contigo."
+            </p>
+          </div>
+          
+          <div class="text-right text-xs font-tech text-sky-800/60 pt-2 border-t border-sky-300/50">
+            // SYSTEMA: PENSAMIENTOS_PERDIDOS_EN_TUTI
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="polaroid-card h-[480px] cursor-pointer" onclick="flipCard(this)">
+      <div class="polaroid-inner">
+        <!-- FRONT -->
+        <div class="polaroid-front bg-slate-900 border-2 border-slate-700 p-4 flex flex-col justify-between shadow-2xl rounded-xl">
+          <div class="relative w-full h-[320px] bg-slate-800 rounded-lg overflow-hidden flex items-center justify-center border border-slate-700 group">
+            <img id="img3" src="tuyyo.jpeg" alt="Flores y Amor" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+            <span class="absolute bottom-2 left-2 text-xs font-tech text-rose-300 bg-slate-950/80 px-2 py-1 rounded">
+              #3 POR TU APOYO INCONDICIONAL
+            </span>
+          </div>
+          <div class="text-center font-handwriting text-2xl text-rose-200 my-auto">
+            Tócame para leer 🌻
+          </div>
+        </div>
+        
+        <!-- BACK -->
+        <div class="polaroid-back bg-gradient-to-br from-rose-100 to-pink-200 text-slate-900 p-5 flex flex-col justify-between border-2 border-rose-400 shadow-2xl rounded-xl overflow-hidden">
+          <div class="flex items-center gap-3 border-b border-pink-300 pb-2 mb-2">
+            <i class="fa-solid fa-seedling text-2xl text-rose-700"></i>
+            <h3 class="font-romantic text-2xl font-bold text-rose-900">Mi Corazón es Tuyo</h3>
+          </div>
+          
+          <div class="overflow-y-auto pr-2 my-1 max-h-[330px] custom-scroll">
+            <p class="font-handwriting text-lg leading-relaxed text-slate-800">
+              "En cada logro, experiencia y aprendizaje en mi vida siempre me has apoyado y eso es algo que yo aprecio mucho de ti, eres mi apoyo incondicional, mi compañero de vida y la persona que me sostiene en cada derrumbe de mi, nose como explicarte lo mucho que deseo compartir mas y muchisimos mas momentos a tu lado."
+            </p>
+          </div>
+          
+          <div class="text-right text-xs font-tech text-rose-800/60 pt-2 border-t border-rose-300/50">
+            // MIMI: JE T'AIME
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Custom Photo Upload/Replace Option -->
+  <div class="mt-8 p-4 rounded-xl bg-slate-900/60 border border-slate-800 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-tech text-slate-400">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-image text-cyan-400 text-lg"></i>
+      <span>¿Quieres personalizar las fotos? Sube las que más te gusten aquí:</span>
+    </div>
+    <label class="cursor-pointer px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 transition-all">
+      <i class="fa-solid fa-upload mr-1"></i> Cambiar Fotos
+      <input type="file" id="photoUploader" multiple accept="image/*" class="hidden" onchange="handleCustomPhotos(event)"/>
+    </label>
+  </div>
+
+</section>
+
+    <!-- SECTION 3: AUTOMOTIVE DASHBOARD / ENGINE START BUTTON -->
+    <section id="dashboardSection" class="w-full max-w-md opacity-0 transition-opacity duration-1000 hidden text-center">
+      <div class="p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-cyan-500/40 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-cyan-400 to-rose-500 animate-pulse"></div>
+        
+        <h3 class="font-tech text-lg text-slate-200 tracking-wider mb-4">
+          <i class="fa-solid fa-gauge-high text-rose-500 mr-2"></i>
+          PANEL DE CONTROL AUTOMOTRIZ
+        </h3>
+
+        <!-- START ENGINE BUTTON -->
+        <button id="engineStartBtn" class="relative group w-36 h-36 mx-auto rounded-full bg-gradient-to-b from-red-600 via-red-700 to-red-900 border-4 border-slate-300 shadow-2xl flex flex-col items-center justify-center cursor-pointer transition-all active:scale-90 hover:shadow-red-500/50">
+          <div class="absolute inset-1 rounded-full border border-red-400/40 group-hover:animate-ping"></div>
+          <i class="fa-solid fa-power-off text-3xl text-white drop-shadow-md mb-1 group-hover:scale-110 transition-transform"></i>
+          <span class="font-tech font-extrabold text-xs tracking-widest text-white">START</span>
+          <span class="font-tech font-bold text-[9px] text-amber-300 tracking-tighter">ENGINE ❤️</span>
+        </button>
+
+        <p class="font-handwriting text-2xl text-slate-300 mt-4">
+          Presiona el botoncito mi niño
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- GIANT FLOWERS LAYER -->
+  <div class="flower-container" id="flowerContainer">
+    <!-- SVG Flowers rendered dynamically via JS -->
+  </div>
+
+  <!-- HOT WHEELS TRACK AT BOTTOM -->
+  <footer class="road-track relative z-30 w-full h-16 flex items-center overflow-hidden shadow-2xl">
+    <div class="absolute left-4 text-xs font-tech text-slate-400 flex items-center gap-2">
+      <i class="fa-solid fa-flag-checkered text-amber-400"></i>
+      <span>HOT WHEELS SPECIAL EDITION</span>
+    </div>
+
+    <!-- CAR 1: RED SUPRA STYLE -->
+    <div id="hotwheel1" class="hotwheel-car bottom-2 z-40">
+      <div class="exhaust-fire"></div>
+      <svg width="120" height="40" viewBox="0 0 120 40" fill="none">
+        <!-- Body -->
+        <path d="M10 25 C20 25 30 15 45 12 L75 12 C90 15 105 20 115 26 C118 28 118 32 112 32 L10 32 Z" fill="url(#redCarGrad)"/>
+        <!-- Spoiler -->
+        <rect x="5" y="16" width="12" height="4" fill="#111" rx="1"/>
+        <rect x="12" y="20" width="3" height="6" fill="#111"/>
+        <!-- Windows -->
+        <path d="M48 14 L72 14 L82 22 L42 22 Z" fill="#0f172a" opacity="0.9"/>
+        <!-- Wheels -->
+        <circle cx="30" cy="32" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2"/>
+        <circle cx="30" cy="32" r="3" fill="#ffd166"/>
+        <circle cx="92" cy="32" r="8" fill="#1e293b" stroke="#cbd5e1" stroke-width="2"/>
+        <circle cx="92" cy="32" r="3" fill="#ffd166"/>
+        <defs>
+          <linearGradient id="redCarGrad" x1="0" y1="0" x2="120" y2="0">
+            <stop offset="0%" stop-color="#dc2626"/>
+            <stop offset="50%" stop-color="#f97316"/>
+            <stop offset="100%" stop-color="#b91c1c"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <!-- CAR 2: BLUE NISSAN GT-R STYLE -->
+    <div id="hotwheel2" class="hotwheel-car bottom-2 z-40">
+      <div class="exhaust-fire"></div>
+      <svg width="120" height="40" viewBox="0 0 120 40" fill="none">
+        <!-- Body -->
+        <path d="M8 26 C18 26 28 14 48 11 L78 11 C92 14 102 20 114 26 C117 28 116 32 110 32 L8 32 Z" fill="url(#blueCarGrad)"/>
+        <!-- Spoiler -->
+        <rect x="3" y="14" width="14" height="4" fill="#0284c7" rx="1"/>
+        <rect x="10" y="18" width="3" height="8" fill="#0f172a"/>
+        <!-- Windows -->
+        <path d="M45 13 L75 13 L85 22 L40 22 Z" fill="#0284c7" opacity="0.6"/>
+        <!-- Wheels -->
+        <circle cx="28" cy="32" r="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+        <circle cx="28" cy="32" r="3" fill="#fff"/>
+        <circle cx="90" cy="32" r="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+        <circle cx="90" cy="32" r="3" fill="#fff"/>
+        <defs>
+          <linearGradient id="blueCarGrad" x1="0" y1="0" x2="120" y2="0">
+            <stop offset="0%" stop-color="#0284c7"/>
+            <stop offset="50%" stop-color="#00b4d8"/>
+            <stop offset="100%" stop-color="#0369a1"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /* ===================================================================
+       1. STARFIELD & GEAR CONSTELLATION CANVAS BACKGROUND
+       =================================================================== */
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let particles = [];
+    let hearts = [];
+
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2.5 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.speedY = (Math.random() - 0.5) * 0.4;
+        this.color = Math.random() > 0.5 ? '#ffd166' : '#00b4d8';
+        this.alpha = Math.random() * 0.8 + 0.2;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+          this.reset();
+        }
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    class FloatingHeart {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = height + 20;
+        this.size = Math.random() * 14 + 10;
+        this.speedY = Math.random() * 1.5 + 0.8;
+        this.speedX = Math.sin(this.y * 0.02);
+        this.opacity = 1;
+        this.color = Math.random() > 0.5 ? '#ff4d6d' : '#ffd166';
+      }
+      update() {
+        this.y -= this.speedY;
+        this.x += Math.sin(this.y * 0.01) * 0.8;
+        this.opacity -= 0.003;
+      }
+      draw() {
+        if (this.opacity <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.opacity);
+        ctx.fillStyle = this.color;
+        ctx.font = `${this.size}px sans-serif`;
+        ctx.fillText('❤️', this.x, this.y);
+        ctx.restore();
+      }
+    }
+
+    // Init Particles
+    for (let i = 0; i < 90; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateBg() {
+      ctx.clearRect(0, 0, width, height);
+      
+      // Draw background ambient gradient
+      let grad = ctx.createRadialGradient(width/2, height/2, 100, width/2, height/2, Math.max(width, height));
+      grad.addColorStop(0, '#0f172a');
+      grad.addColorStop(1, '#050811');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Render Particles
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      // Render Floating Hearts
+      hearts.forEach((h, index) => {
+        h.update();
+        h.draw();
+        if (h.opacity <= 0 || h.y < -30) {
+          hearts.splice(index, 1);
+        }
+      });
+
+      requestAnimationFrame(animateBg);
+    }
+    animateBg();
+
+    function triggerHeartBurst(count = 20) {
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          hearts.push(new FloatingHeart());
+        }, i * 60);
+      }
+    }
+
+    /* ===================================================================
+       2. ENVELOPE & LETTER INTERACTION
+       =================================================================== */
+    const waxSealBtn = document.getElementById('waxSealBtn');
+    const envelope = document.getElementById('envelope');
+    const letterPaper = document.getElementById('letterPaper');
+    const bloomBtn = document.getElementById('bloomBtn');
+    const reasonsSection = document.getElementById('reasonsSection');
+    const dashboardSection = document.getElementById('dashboardSection');
+
+    waxSealBtn.addEventListener('click', () => {
+      envelope.classList.add('open');
+      triggerHeartBurst(15);
+
+      setTimeout(() => {
+        // Expand letter nicely
+        letterPaper.style.position = 'fixed';
+        letterPaper.style.top = '50%';
+        letterPaper.style.left = '50%';
+        letterPaper.style.transform = 'translate(-50%, -50%) scale(1)';
+        letterPaper.style.width = '90%';
+        letterPaper.style.maxWidth = '550px';
+        letterPaper.style.height = 'auto';
+        letterPaper.style.maxHeight = '85vh';
+        letterPaper.style.opacity = '1';
+        letterPaper.style.pointerEvents = 'auto';
+        letterPaper.style.zIndex = '100';
+      }, 600);
+    });
+
+    /* ===================================================================
+       3. GIANT REALISTIC SVG FLOWERS (YELLOW & BLUE)
+       =================================================================== */
+    const flowerContainer = document.getElementById('flowerContainer');
+
+    bloomBtn.addEventListener('click', () => {
+      // Hide Letter softly
+      letterPaper.style.opacity = '0';
+      letterPaper.style.pointerEvents = 'none';
+
+      // Reveal other sections
+      reasonsSection.classList.remove('hidden');
+      dashboardSection.classList.remove('hidden');
+      setTimeout(() => {
+        reasonsSection.style.opacity = '1';
+        dashboardSection.style.opacity = '1';
+      }, 100);
+
+      // Render Giant Flowers
+      renderGiantFlowers();
+      triggerHeartBurst(30);
+
+      // Trigger Hot Wheels race
+      triggerHotWheels();
+    });
+
+    function renderGiantFlowers() {
+      flowerContainer.innerHTML = ''; // clear
+
+      // Array of 5 Giant Flowers (Alternating Yellow Sunflower & Glowing Blue Rose)
+      const flowersData = [
+        { type: 'yellow', height: 420, scale: 1.1, flexOrder: 1 },
+        { type: 'blue', height: 480, scale: 1.3, flexOrder: 2 },
+        { type: 'yellow', height: 520, scale: 1.4, flexOrder: 3 },
+        { type: 'blue', height: 450, scale: 1.2, flexOrder: 4 },
+        { type: 'yellow', height: 390, scale: 1.0, flexOrder: 5 }
+      ];
+
+      flowersData.forEach((data, index) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flower-svg-wrapper';
+        wrapper.style.order = data.flexOrder;
+        
+        // Flower SVGs
+        const isYellow = data.type === 'yellow';
+        const petalColor1 = isYellow ? '#ffd166' : '#00b4d8';
+        const petalColor2 = isYellow ? '#f4a261' : '#03045e';
+        const centerColor = isYellow ? '#582f0e' : '#0f172a';
+
+        wrapper.innerHTML = `
+          <svg width="${160 * data.scale}" height="${data.height}" viewBox="0 0 200 500" fill="none" class="animate-bounce-slow">
+            <!-- Stem -->
+            <path d="M100 500 C100 350 ${80 + index * 10} 250 100 150" stroke="url(#stemGrad)" stroke-width="12" stroke-linecap="round"/>
+            
+            <!-- Leaves -->
+            <path d="M95 360 C50 340 30 380 95 400 Z" fill="#2a9d8f"/>
+            <path d="M105 280 C150 260 170 300 105 320 Z" fill="#2a9d8f"/>
+
+            <!-- Flower Head Container -->
+            <g transform="translate(100, 140)">
+              <!-- Outer Glowing Halo -->
+              <circle cx="0" cy="0" r="65" fill="${petalColor1}" opacity="0.25" filter="blur(10px)"/>
+              
+              <!-- Petals Ring 1 -->
+              ${generatePetalsSVG(12, 55, petalColor1, petalColor2)}
+
+              <!-- Petals Ring 2 -->
+              ${generatePetalsSVG(8, 38, '#fff', petalColor1)}
+
+              <!-- Flower Center -->
+              <circle cx="0" cy="0" r="24" fill="${centerColor}" stroke="${petalColor1}" stroke-width="3"/>
+              <circle cx="0" cy="0" r="18" fill="url(#centerPattern)"/>
+            </g>
+
+            <!-- Gradient Definitions -->
+            <defs>
+              <linearGradient id="stemGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#52b788"/>
+                <stop offset="100%" stop-color="#1b4332"/>
+              </linearGradient>
+              <radialGradient id="centerPattern" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffd166"/>
+                <stop offset="100%" stop-color="${centerColor}"/>
+              </radialGradient>
+            </defs>
+          </svg>
+        `;
+
+        // Interactive Click on Flower
+        wrapper.addEventListener('click', () => {
+          wrapper.style.transform = 'scale(1.25) translateY(-20px) rotate(5deg)';
+          triggerHeartBurst(8);
+          setTimeout(() => {
+            wrapper.style.transform = 'scale(1) translateY(0) rotate(0deg)';
+          }, 400);
+        });
+
+        flowerContainer.appendChild(wrapper);
+      });
+    }
+
+    function generatePetalsSVG(count, radius, c1, c2) {
+      let petalsHTML = '';
+      for (let i = 0; i < count; i++) {
+        const angle = (360 / count) * i;
+        petalsHTML += `
+          <path d="M0 0 C-15 -${radius} -5 -${radius + 15} 0 -${radius + 25} C5 -${radius + 15} 15 -${radius} 0 0 Z" 
+                fill="${c1}" stroke="${c2}" stroke-width="1.5"
+                transform="rotate(${angle})"/>
+        `;
+      }
+      return petalsHTML;
+    }
+
+    /* ===================================================================
+       4. HOT WHEELS RACING LOGIC
+       =================================================================== */
+    const car1 = document.getElementById('hotwheel1');
+    const car2 = document.getElementById('hotwheel2');
+    const engineStartBtn = document.getElementById('engineStartBtn');
+
+    function triggerHotWheels() {
+      // Reset animations
+      car1.classList.remove('racing-1');
+      car2.classList.remove('racing-2');
+      void car1.offsetWidth; // trigger reflow
+      void car2.offsetWidth;
+
+      car1.classList.add('racing-1');
+      car2.classList.add('racing-2');
+    }
+
+    engineStartBtn.addEventListener('click', () => {
+      triggerHotWheels();
+      triggerHeartBurst(25);
+
+      // Temporary button glow
+      engineStartBtn.classList.add('ring-4', 'ring-amber-400', 'scale-110');
+      setTimeout(() => {
+        engineStartBtn.classList.remove('ring-4', 'ring-amber-400', 'scale-110');
+      }, 500);
+    });
+
+    /* ===================================================================
+       5. POLAROID FLIP & PHOTO UPLOADER
+       =================================================================== */
+    function flipCard(cardElement) {
+      cardElement.classList.toggle('flipped');
+      triggerHeartBurst(3);
+    }
+
+    function handleCustomPhotos(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      const imgIds = ['img1', 'img2', 'img3'];
+      for (let i = 0; i < Math.min(files.length, 3); i++) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById(imgIds[i]).src = e.target.result;
+        };
+        reader.readAsDataURL(files[i]);
+      }
+      triggerHeartBurst(15);
+    }
+  </script>
+</body>
+</html>
